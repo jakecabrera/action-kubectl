@@ -91,9 +91,8 @@ def main():
     
     # Display or store output
     if display_results:
-        print("::group::[INFO] Command output:")
+        log("Command output:")
         print(output)
-        print("::endgroup::")
         log("End of command output")
     else:
         log("Output display is suppressed")
