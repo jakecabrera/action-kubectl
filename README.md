@@ -80,7 +80,7 @@ If security is a concern, consider setting `display_results` or `display_command
 
 ## Handling Environment Variables in Arguments
 
-When passing arguments to `kubectl` via the `args` input, note that environment variables **will not be expanded** within the argument string. This means that attempting to reference an environment variable directly within `args` will not work as expected.
+When passing arguments to `kubectl` via the `args` input, note that environment variables **will be expanded** within the argument string. This means that referencing an environment variable directly within `args` will work as expected.
 
 ### Correct Usage
 
@@ -90,21 +90,8 @@ Use GitHub Actions' context syntax to properly pass environment variables:
 - name: Restart deployment
   uses: jakecabrera/action-kubectl@main
   with:
-    args: rollout restart ${{ env.NON_PRODUCTION_DEPLOYMENT }}
-```
-
-### Incorrect Usage
-
-The following example **will not work**, because environment variable expansion does not occur inside `args`:
-
-```yaml
-- name: Restart deployment
-  uses: jakecabrera/action-kubectl@main
-  with:
     args: rollout restart $NON_PRODUCTION_DEPLOYMENT
 ```
-
-If you need to use dynamic values, define them within GitHub Actions' workflow syntax using `env` or `outputs` and reference them properly within `args`.
 
 ## Available Inputs
 
@@ -135,7 +122,6 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - uses: actions/checkout@v4
       - uses: jakecabrera/action-kubectl@main
         with:
           kube_config: ${{ secrets.KUBE_CONFIG }}
@@ -154,7 +140,6 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - uses: actions/checkout@v4
       - uses: jakecabrera/action-kubectl@main
         with:
           args: get deployments -o jsonpath={.items[0].metadata.name}
@@ -169,7 +154,7 @@ jobs:
 To use a specific version of this action, reference the tag in your workflow:
 
 ```yaml
-- uses: jakecabrera/action-kubectl@1.0.0
+- uses: jakecabrera/action-kubectl@v2
   with:
     kube_config: ${{ secrets.KUBE_CONFIG }}
     args: get pods
