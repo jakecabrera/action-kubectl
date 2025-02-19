@@ -2,6 +2,9 @@ name: tests
 
 on: [push]
 
+env:
+  KUBE_CONFIG: ${{ secrets.KUBE_CONFIG }}
+
 jobs:
   kustomize:
     runs-on: arc-action-kubectl
