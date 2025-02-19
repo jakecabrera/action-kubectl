@@ -1,0 +1,42 @@
+name: 'Kubernetes (k8s) CLI - kubectl'
+description: 'GitHub Action for interacting with kubectl (k8s)'
+author: 'Jake Cabrera'
+branding:
+  icon: 'terminal'
+  color: 'blue'
+inputs:
+  args:
+    description: 'Arguments for the CLI command'
+    required: false
+  output_variable:
+    description: 'Environment variable name to save output to (optional)'
+    required: false
+  display_results:
+    description: 'Whether or not to show output of command'
+    required: false
+    default: 'true'
+  display_command:
+    description: 'Whether or not to show the fully built command before execution'
+    required: false
+    default: 'true'
+  kube_host:
+    description: 'Kubernetes API server host (defaults to KUBE_HOST environment variable)'
+    required: false
+  kube_certificate:
+    description: 'Base64-encoded Kubernetes certificate authority (defaults to KUBE_CERTIFICATE environment variable)'
+    required: false
+  kube_username:
+    description: 'Kubernetes username (defaults to KUBE_USERNAME environment variable)'
+    required: false
+  kube_password:
+    description: 'Kubernetes password (defaults to KUBE_PASSWORD environment variable)'
+    required: false
+  kube_token:
+    description: 'Kubernetes API token (defaults to KUBE_TOKEN environment variable)'
+    required: false
+  kube_config:
+    description: 'A base64-encoded kubeconfig file (defaults to KUBE_CONFIG environment variable)'
+    required: false
+runs:
+  using: 'docker'
+  image: 'Dockerfile'
