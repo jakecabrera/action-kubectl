@@ -4,7 +4,7 @@ on: [push]
 
 jobs:
   kustomize:
-    runs-on: ubuntu-latest
+    runs-on: arc-action-kubectl
     steps:
       - uses: actions/checkout@v4
       - run: |
