@@ -46,12 +46,39 @@ jobs:
                 - name: nginx
                   image: "nginx:latest"
           EOF
-      - uses: ./
+      - name: apply resources
+        uses: ./
         with:
           args: apply -f test-resources.yaml
-      - uses: ./
+      - name: Get Pod Names
+        uses: ./
         with:
           args: get pods -l app=test -o jsonpath='{.items[*].metadata.name}'
-      - uses: ./
+          output_variable: POD_NAMES
+      - name: Get Deployments
+        uses: ./
+        with:
+          args: get deployments
+          output_variable: DEPLOYMENTS
+      - name: Check Output
+        run: |
+          error=0
+          if [ -z "$DEPLOYMENTS" ]; then
+            echo "ERROR: DEPLOYMENTS is empty"
+            error=1
+          else
+            echo "DEPLOYMENTS: $DEPLOYMENTS"
+          fi
+          if [ -z "$POD_NAMES" ]; then
+            echo "ERROR: POD_NAMES is empty"
+            error=1
+          else
+            echo "POD_NAMES: $POD_NAMES"
+          fi
+          if [ "$error" -eq 1 ]; then
+            exit 1
+          fi
+      - name: Delete Resources
+        uses: ./
         with:
           args: delete -f test-resources.yaml
