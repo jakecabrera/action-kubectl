@@ -45,7 +45,7 @@ jobs:
                   containers:
                   - name: nginx
                     image: "nginx:latest"
-                EOF
+          EOF
       - uses: ./
         with:
           args: apply -f test-resources.yaml
