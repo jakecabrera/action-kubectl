@@ -18,3 +18,40 @@ jobs:
       - uses: ./
         with:
           args: kustomize
+  deploy_test:
+    runs-on: arc-action-kubectl
+    steps:
+      - uses: actions/checkout@v4
+      - name: create resources
+        shell: bash
+        run: |
+          cat <<EOF > test-resources.yaml
+                apiVersion: apps/v1
+                kind: Deployment
+                metadata:
+                name: test-deployment
+                labels:
+                  app: test
+                spec:
+                replicas: 3
+                selector:
+                  matchLabels:
+                  app: test
+                template:
+                  metadata:
+                  labels:
+                    app: test
+                  spec:
+                  containers:
+                  - name: nginx
+                    image: nginx:latest
+                EOF
+      - uses: ./
+        with:
+          args: apply -f test-resources.yaml
+      - uses: ./
+        with:
+          args: get pods -l app=test -o jsonpath='{.items[*].metadata.name}'
+      - uses: ./
+        with:
+          args: delete -f test-resources.yaml
