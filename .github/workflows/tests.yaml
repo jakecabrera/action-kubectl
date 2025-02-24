@@ -44,7 +44,7 @@ jobs:
                   spec:
                   containers:
                   - name: nginx
-                    image: nginx:latest
+                    image: "nginx:latest"
                 EOF
       - uses: ./
         with:
