@@ -1,0 +1,100 @@
+name: tests
+
+on: [push]
+
+env:
+  KUBE_CONFIG: ${{ secrets.KUBE_CONFIG }}
+
+jobs:
+  kustomize:
+    runs-on: arc-action-kubectl
+    steps:
+      - uses: actions/checkout@v4
+      - run: |
+          echo 'configMapGenerator:
+              - name: example
+                literals:
+                  - FOO=Bar' > kustomization.yaml
+      - uses: ./
+        with:
+          args: kustomize
+  deploy_test:
+    runs-on: arc-action-kubectl
+    steps:
+      - uses: actions/checkout@v4
+      - name: create resources
+        shell: bash
+        run: |
+          cat <<EOF > test-resources.yaml
+          apiVersion: apps/v1
+          kind: Deployment
+          metadata:
+            name: test-deployment
+            labels:
+              app: test
+          spec:
+            replicas: 3
+            selector:
+              matchLabels:
+                app: test
+            template:
+              metadata:
+                labels:
+                  app: test
+              spec:
+                containers:
+                - name: nginx
+                  image: "nginx:latest"
+          EOF
+      - name: apply resources
+        uses: ./
+        with:
+          args: apply -f test-resources.yaml
+      - name: Get Pod Names
+        uses: ./
+        with:
+          args: get pods -l app=test -o jsonpath='{.items[*].metadata.name}'
+          output_variable: POD_NAMES
+      - name: Get Deployments
+        uses: ./
+        with:
+          args: get deployments
+          output_variable: DEPLOYMENTS
+      - name: Check for expected output
+        run: |
+            error=0
+            echo "[INFO] Starting Check Output step"
+            echo "[INFO] Checking DEPLOYMENTS variable"
+            if [ -z "$DEPLOYMENTS" ]; then
+              echo "[ERROR] DEPLOYMENTS is empty"
+              error=1
+            else
+              echo "[INFO] DEPLOYMENTS: START_VALUE"
+              echo "$DEPLOYMENTS"
+              echo "[INFO] DEPLOYMENTS: END_VALUE"
+              # Check if DEPLOYMENTS has more than one line
+              if [[ $(echo "[INFO] $DEPLOYMENTS" | wc -l) -le 1 ]]; then
+                echo "[ERROR] Expected a multiline string for DEPLOYMENTS but found single line or less"
+                error=1
+              fi
+            fi
+            echo "[INFO] Finished check for DEPLOYMENTS"
+            echo "[INFO] Checking POD_NAMES variable"
+            if [ -z "$POD_NAMES" ]; then
+              echo "[ERROR] POD_NAMES is empty"
+              error=1
+            else
+              echo "[INFO] POD_NAMES: START_VALUE"
+              echo "$POD_NAMES"
+              echo "[INFO] POD_NAMES: END_VALUE"
+            fi
+            echo "[INFO] Finished check for POD_NAMES"
+            if [ "$error" -eq 1 ]; then
+              echo "[ERROR] Exiting with error code 1"
+              exit 1
+            fi
+            echo "[INFO] Finished Check Output step"
+      - name: Delete Resources
+        uses: ./
+        with:
+          args: delete -f test-resources.yaml

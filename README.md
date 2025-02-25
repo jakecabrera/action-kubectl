@@ -15,7 +15,7 @@ This action allows authentication using different methods. Note that all input a
 First, you can authenticate using a kubeconfig file.
 
 ```yaml
-- uses: jakecabrera/action-kubectl@main
+- uses: sarge841/action-kubectl@main
   with:
     kube_config: ${{ secrets.KUBE_CONFIG }}
     args: get pods
@@ -24,7 +24,7 @@ First, you can authenticate using a kubeconfig file.
 Alternatively, if you are storing the kubeconfig content in an environment variable:
 
 ```yaml
-- uses: jakecabrera/action-kubectl@main
+- uses: sarge841/action-kubectl@main
   env:
     KUBE_CONFIG: ${{ secrets.KUBE_CONFIG }}
   with:
@@ -42,7 +42,7 @@ An example of getting the kube config file as base64: `cat $HOME/.kube/config | 
 #### 2. Using Credentials (Username & Password)
 
 ```yaml
-- uses: jakecabrera/action-kubectl@main
+- uses: sarge841/action-kubectl@main
   with:
     kube_host: ${{ secrets.KUBE_HOST }}
     kube_certificate: ${{ secrets.KUBE_CERTIFICATE }}
@@ -54,7 +54,7 @@ An example of getting the kube config file as base64: `cat $HOME/.kube/config | 
 #### 3. Using a Bearer Token
 
 ```yaml
-- uses: jakecabrera/action-kubectl@main
+- uses: sarge841/action-kubectl@main
   with:
     kube_host: ${{ secrets.KUBE_HOST }}
     kube_certificate: ${{ secrets.KUBE_CERTIFICATE }}
@@ -71,16 +71,16 @@ Additionally, you can choose to display the fully built command before execution
 If security is a concern, consider setting `display_results` or `display_command` to `false`.
 
 ```yaml
-- uses: jakecabrera/action-kubectl@main
+- uses: sarge841/action-kubectl@main
   with:
-    args: get deployments -o jsonpath={.items[0].metadata.name}
+    args: get deployments -o jsonpath='{.items[0].metadata.name}'
     output_variable: DEPLOYMENT_NAME
     display_results: "false"
 ```
 
 ## Handling Environment Variables in Arguments
 
-When passing arguments to `kubectl` via the `args` input, note that environment variables **will not be expanded** within the argument string. This means that attempting to reference an environment variable directly within `args` will not work as expected.
+When passing arguments to `kubectl` via the `args` input, note that environment variables **will be expanded** within the argument string. This means that referencing an environment variable directly within `args` will work as expected.
 
 ### Correct Usage
 
@@ -88,23 +88,10 @@ Use GitHub Actions' context syntax to properly pass environment variables:
 
 ```yaml
 - name: Restart deployment
-  uses: jakecabrera/action-kubectl@main
-  with:
-    args: rollout restart ${{ env.NON_PRODUCTION_DEPLOYMENT }}
-```
-
-### Incorrect Usage
-
-The following example **will not work**, because environment variable expansion does not occur inside `args`:
-
-```yaml
-- name: Restart deployment
-  uses: jakecabrera/action-kubectl@main
+  uses: sarge841/action-kubectl@main
   with:
     args: rollout restart $NON_PRODUCTION_DEPLOYMENT
 ```
-
-If you need to use dynamic values, define them within GitHub Actions' workflow syntax using `env` or `outputs` and reference them properly within `args`.
 
 ## Available Inputs
 
@@ -135,8 +122,7 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - uses: actions/checkout@v4
-      - uses: jakecabrera/action-kubectl@main
+      - uses: sarge841/action-kubectl@main
         with:
           kube_config: ${{ secrets.KUBE_CONFIG }}
           args: get pods
@@ -154,10 +140,9 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - uses: actions/checkout@v4
-      - uses: jakecabrera/action-kubectl@main
+      - uses: sarge841/action-kubectl@main
         with:
-          args: get deployments -o jsonpath={.items[0].metadata.name}
+          args: get deployments -o jsonpath='{.items[0].metadata.name}'
           output_variable: DEPLOYMENT_NAME
           display_results: "false"
 
@@ -169,7 +154,7 @@ jobs:
 To use a specific version of this action, reference the tag in your workflow:
 
 ```yaml
-- uses: jakecabrera/action-kubectl@1.0.0
+- uses: sarge841/action-kubectl@v1.32.2
   with:
     kube_config: ${{ secrets.KUBE_CONFIG }}
     args: get pods
@@ -177,7 +162,7 @@ To use a specific version of this action, reference the tag in your workflow:
 
 ## License
 
-[MIT License](https://github.com/jakecabrera/action-kubectl/blob/main/LICENSE)
+[MIT License](https://github.com/sarge841/action-kubectl/blob/main/LICENSE)
 
 
 ## Attribution
