@@ -63,37 +63,37 @@ jobs:
       - name: Check for expected output
         run: |
             error=0
-            echo "Starting Check Output step"
-            echo "Checking DEPLOYMENTS variable"
+            echo "[INFO] Starting Check Output step"
+            echo "[INFO] Checking DEPLOYMENTS variable"
             if [ -z "$DEPLOYMENTS" ]; then
-              echo "ERROR: DEPLOYMENTS is empty"
+              echo "[ERROR] DEPLOYMENTS is empty"
               error=1
             else
-              echo "DEPLOYMENTS: START_VALUE"
+              echo "[INFO] DEPLOYMENTS: START_VALUE"
               echo "$DEPLOYMENTS"
-              echo "DEPLOYMENTS: END_VALUE"
+              echo "[INFO] DEPLOYMENTS: END_VALUE"
               # Check if DEPLOYMENTS has more than one line
-              if [[ $(echo "$DEPLOYMENTS" | wc -l) -le 1 ]]; then
-                echo "ERROR: Expected a multiline string for DEPLOYMENTS but found single line or less"
+              if [[ $(echo "[INFO] $DEPLOYMENTS" | wc -l) -le 1 ]]; then
+                echo "[ERROR] Expected a multiline string for DEPLOYMENTS but found single line or less"
                 error=1
               fi
             fi
-            echo "Finished check for DEPLOYMENTS"
-            echo "Checking POD_NAMES variable"
+            echo "[INFO] Finished check for DEPLOYMENTS"
+            echo "[INFO] Checking POD_NAMES variable"
             if [ -z "$POD_NAMES" ]; then
-              echo "ERROR: POD_NAMES is empty"
+              echo "[ERROR] POD_NAMES is empty"
               error=1
             else
-              echo "POD_NAMES: START_VALUE"
+              echo "[INFO] POD_NAMES: START_VALUE"
               echo "$POD_NAMES"
-              echo "POD_NAMES: END_VALUE"
+              echo "[INFO] POD_NAMES: END_VALUE"
             fi
-            echo "Finished check for POD_NAMES"
+            echo "[INFO] Finished check for POD_NAMES"
             if [ "$error" -eq 1 ]; then
-              echo "Exiting with error code 1"
+              echo "[ERROR] Exiting with error code 1"
               exit 1
             fi
-            echo "Finished Check Output step"
+            echo "[INFO] Finished Check Output step"
       - name: Delete Resources
         uses: ./
         with:
