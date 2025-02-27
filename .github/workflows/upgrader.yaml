@@ -5,6 +5,10 @@ on:
     - cron: "0 */12 * * *"
   workflow_dispatch:
 
+permissions:
+  contents: write  # Allows reading and writing repository contents
+  packages: write  # Allows creating releases
+
 jobs:
   check:
     runs-on: ubuntu-latest

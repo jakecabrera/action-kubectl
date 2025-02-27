@@ -2,6 +2,9 @@ name: tests
 
 on: [push]
 
+permissions:
+  contents: read  # Allows reading repository contents
+
 env:
   KUBE_CONFIG: ${{ secrets.KUBE_CONFIG }}
 
@@ -18,6 +21,7 @@ jobs:
       - uses: ./
         with:
           args: kustomize
+
   deploy_test:
     runs-on: arc-action-kubectl
     steps:
